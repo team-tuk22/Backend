@@ -1,0 +1,23 @@
+# Python 캐시 / 빌드
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pkl
+*.so
+
+# 가상환경
+.env
+.venv/
+env/
+venv/
+
+# IDE/에디터 관련
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# 로그 / 임시 파일
+*.log
+*.tmp
