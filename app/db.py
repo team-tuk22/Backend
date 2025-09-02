@@ -2,7 +2,7 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://lawuser:lawpass@db:5432/lawdb")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 class Base(DeclarativeBase):
 
