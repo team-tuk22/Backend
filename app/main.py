@@ -1,16 +1,34 @@
-from fastapi import FastAPI
-from app.routers import crawl
-from app.databases.database import init_db
+# app/main.py
+from fastapi import FastAPI, Query
+# from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import select, func
+from sqlalchemy.orm import Session
 
+from .db import Base, engine, SessionLocal
+from .models.model import Judgement
+
+Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
-@app.on_event("startup")
-def on_startup():
-    init_db()
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"], allow_credentials=True,
+#     allow_methods=["*"], allow_headers=["*"],
+# )
 
-# 판례 크롤링 라우터 등록
-app.include_router(crawl.router)
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 
-@app.get("/")
-def root():
-    return {"message": "Hello"}
+@app.get("/api/v1/rulings/search")
+def search(q: str = Query("", min_length=0), limit: int = 10, offset: int = 0):
+    with SessionLocal() as db:  # type: Session
+        cond = (Judgement.title.ilike(f"%{q}%")) | (Judgement.body.ilike(f"%{q}%"))
+        stmt = select(Judgement).where(cond).limit(limit).offset(offset)
+        total_stmt = select(func.count()).select_from(select(Judgement).where(cond).subquery())
+        items = db.execute(stmt).scalars().all()
+        total = db.scalar(total_stmt) or 0
+        return {
+            "query": q, "limit": limit, "offset": offset, "total": total,
+            "items": [{"id": r.id, "title": r.title, "court": r.court, "date": r.date} for r in items],
+        }

@@ -21,3 +21,7 @@ venv/
 # 로그 / 임시 파일
 *.log
 *.tmp
+
+# DB 관련
+dump.sql
+pgdata/

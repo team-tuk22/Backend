@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, Text
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
 import uuid
-from app.databases.database import Base
+from ..db import Base
 
 
 class Judgement(Base):
