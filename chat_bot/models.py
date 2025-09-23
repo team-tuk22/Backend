@@ -37,7 +37,7 @@ def _load_gemini_model() -> None:
         gemini_client = genai.GenerativeModel(GEMINI_MODEL_NAME)
 
 
-def generate_response(
+def make_response(
     user_q: str,  # 사용자의 실제 질문
     db_data: Optional[List[Dict]] = None,  # DB 검색으로 얻은 판례 데이터
     system_prompt: str = "당신은 법률 전문가이며, 오직 다음의 판례 데이터만을 참고하여 사용자 질문에 답변해야 합니다. 제공된 데이터에 없는 내용은 답변할 수 없습니다.",
