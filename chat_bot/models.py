@@ -38,7 +38,7 @@ def _load_gemini_model() -> None:
 
 
 def make_response(
-    user_q: str,  # 사용자의 실제 질문
+    user_question: str,  # 사용자의 실제 질문
     db_data: Optional[List[Dict]] = None,  # DB 검색으로 얻은 판례 데이터
     system_prompt: str = "당신은 법률 전문가이며, 오직 다음의 판례 데이터만을 참고하여 사용자 질문에 답변해야 합니다. 제공된 데이터에 없는 내용은 답변할 수 없습니다.",
     model_type: str = "huggingface",  # 사용할 AI 모델 타입 ('huggingface' 또는 'gemini')
@@ -52,7 +52,7 @@ def make_response(
     # 여기까지가 디버깅 용도 코드.
 
     # 사용자 질문과 DB 결과를 합쳐서 AI에게 전달할 전체 메시지 생성
-    full_message = user_q
+    full_message = user_question
     if db_data:
         db_text = "\n\n다음은 당신이 참고할 법률 판례 데이터입니다:\n"
         for i, item in enumerate(db_data):
@@ -96,4 +96,5 @@ def make_response(
         result = hf_tokenizer.decode(output[0], skip_special_tokens=True)
         return result
     else:
+        # 지원하지 않는 모델 타입인 경우 에러 메시지 반환
         return f"잘못된 모델 {model_type}. 'huggingface' 또는 'gemini'를 선택해주세요."

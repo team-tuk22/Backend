@@ -11,15 +11,15 @@ from app.models.model import Judgement
 router = APIRouter()
 
 class ChatRequest(BaseModel):
-    user_q: str # 유저 질문
-    db_q: str = ""  # DB 검색 키워드
-    model_t: str = "" # 모델 타입
+    user_question: str  # 유저 질문
+    db_should_query_this: str = ""  # DB 검색 키워드
+    model_type: str = ""  # 모델 타입
 
 @router.post("/chatbot/generate")
 def chat(request: ChatRequest):
     # 키워드 받음 -> DB에서 그 단어가 들어간 판례를 일단 가져옴 -> AI 모델에 질문과 같이 던져줌 -> 답변 받아옴 -> 출력.
-    # 1. 단 db_q를 써서 DB에서 검색 돌림.
-    query = request.db_q
+    # 1. 단 db_should_query_this를 써서 DB에서 검색 돌림.
+    query = request.db_should_query_this
     
     # 2. 데이터베이스 세션 시작
     with SessionLocal() as db:  
@@ -43,9 +43,9 @@ def chat(request: ChatRequest):
 
     # 최종 -> 변환된 결과, 사용자 질문을 함께 챗봇 모델에 전달.
     response = make_response(
-        user_message=request.user_q,
-        db_results=results, 
-        model_type=request.model_t
+        user_question=request.user_question, # 버그 수정 완료!
+        db_data=results, 
+        model_type=request.model_type
     )
     
     return {"response": response}
