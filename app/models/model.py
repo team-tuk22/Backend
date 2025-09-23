@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, Text
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
 import uuid
-from app.databases.database import Base
+from app.databases.db import Base
 
 
 class Judgement(Base):
@@ -19,7 +19,7 @@ class Judgement(Base):
     case_type = Column(String, index=True)                                # 사건종류
     case_type_code = Column(Integer, index=True)                          # 사건종류코드
     case_result_type = Column(String, index=True)                         # 판결유형
-    case_result_decision = Column(String, index=True, nullable=False)     # 판결시사항
+    case_result_decision = Column(String, index=True)                     # 판결시사항
     case_result_summary = Column(Text, nullable=True)                     # 판결요지
     reference = Column(String, nullable=True)                             # 참조조문
     reference_case = Column(String, nullable=True)                        # 참조판례
