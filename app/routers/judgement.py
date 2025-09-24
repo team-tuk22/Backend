@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Query, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.utils.crawl import fetch_law_data
-from app.databases.database import get_db
+from app.db import get_db
 from app.models.model import Judgement
 import uuid
 from datetime import date
