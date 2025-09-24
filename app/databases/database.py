@@ -44,6 +44,7 @@
 
 # from app.models.model import Base  # 모델들을 메타데이터에 등록
 
+
 # def init_db():
 #     """
 #     Create all tables defined in SQLAlchemy models.
