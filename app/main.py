@@ -1,16 +1,19 @@
 from fastapi import FastAPI
-from app.routers import crawl
-from app.databases.database import init_db
+from fastapi.middleware.cors import CORSMiddleware
+
+# 라우터 import
+from app.routers import rulings, judgement   # ✅ crawl은 제거
 
 app = FastAPI()
 
-@app.on_event("startup")
-def on_startup():
-    init_db()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# 판례 크롤링 라우터 등록
-app.include_router(crawl.router)
-
-@app.get("/")
-def root():
-    return {"message": "Hello"}
+# 라우터 등록
+app.include_router(rulings.router)
+app.include_router(judgement.router)   # ✅ judgement 라우터 추가
