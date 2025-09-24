@@ -1,6 +1,3 @@
-# app/main.py
-
-
 from fastapi import FastAPI, Query
 # from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select, func
@@ -8,14 +5,13 @@ from sqlalchemy.orm import Session
 
 from .db import Base, engine, SessionLocal
 from .models.model import Judgement
-from .routers import crawl, chatbot # 'chatbot' 추가
+from app.routers import router
 
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
-app.include_router(crawl.router) # 크롤러 라우터
-app.include_router(chatbot.router) # 챗봇 라우터
+app.include_router(router)
 # 이제 판례 API에서 JSON 형식으로 가져오면 작동 함. 
 
 
