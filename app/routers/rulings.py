@@ -1,7 +1,7 @@
 # FastAPI의 APIRouter와 에러 처리를 위한 HTTPException을 가져옵니다.
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.databases.database import get_db
+from app.db import get_db
 from app.models.model import Judgement
 
 # APIRouter 객체를 생성합니다. Flask의 Blueprint와 비슷한 역할을 합니다.
