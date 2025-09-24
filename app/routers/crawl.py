@@ -9,3 +9,4 @@ def fetch_law_data(law_id: str):
     resp = httpx.get(url, timeout=15)
     resp.raise_for_status()
     return resp.json()
+

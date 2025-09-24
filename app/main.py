@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
 # 라우터 import
-from app.routers import rulings, judgement   # ✅ crawl은 제거
+from app.routers import rulings, judgement 
 
 app = FastAPI()
 
@@ -16,4 +15,4 @@ app.add_middleware(
 
 # 라우터 등록
 app.include_router(rulings.router)
-app.include_router(judgement.router)   # ✅ judgement 라우터 추가
+app.include_router(judgement.router)  

@@ -34,13 +34,9 @@ def get_ruling_detail(case_number: str, db: Session = Depends(get_db)):
 
 # 요약보기 : 사건번호로 판례 요약 조회
 @router.get("/{case_number}/summary")
-def get_ruling_summary(case_id: str):
-    #1 1. case_number로 판례 데이터를 찾는다.
-    case = next((case for case in mock_cases if case["id"] == case_id), None)
-    
-    #2 판례를 찾았다면, 요약 정보만 담은 새로운 응답을 만든다.
-    if case:
-        return {"id": case["id"], "summary": case["summary"]}
-    #3 판례가 없다면 에러를 보냄.
-    else:
-        raise HTTPException(status_code=404, detail="해당 ID의 판례를 찾을 수 없습니다.")
+def get_ruling_summary(case_number: str, db: Session = Depends(get_db)):
+    obj = db.query(Judgement).filter(Judgement.case_number == case_number).first()
+    if not obj:
+        raise HTTPException(status_code=404, detail="해당 사건번호를 찾을 수 없습니다.")
+    return {"id": obj.id, "summary": obj.case_result_summary}
+

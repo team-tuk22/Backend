@@ -42,3 +42,4 @@ def get_or_fetch_judgement(id: str = Query(...), db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_case)
     return new_case
+
