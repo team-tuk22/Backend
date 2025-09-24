@@ -1,4 +1,6 @@
 # app/main.py
+
+
 from fastapi import FastAPI, Query
 # from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select, func
@@ -6,9 +8,16 @@ from sqlalchemy.orm import Session
 
 from .db import Base, engine, SessionLocal
 from .models.model import Judgement
+from .routers import crawl, chatbot # 'chatbot' 추가
+
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI()
+
+app.include_router(crawl.router) # 크롤러 라우터
+app.include_router(chatbot.router) # 챗봇 라우터
+# 이제 판례 API에서 JSON 형식으로 가져오면 작동 함. 
+
 
 # app.add_middleware(
 #     CORSMiddleware,
@@ -23,12 +32,12 @@ def health():
 @app.get("/api/v1/rulings/search")
 def search(q: str = Query("", min_length=0), limit: int = 10, offset: int = 0):
     with SessionLocal() as db:  # type: Session
-        cond = (Judgement.title.ilike(f"%{q}%")) | (Judgement.body.ilike(f"%{q}%"))
+        cond = (Judgement.case_name.ilike(f"%{q}%")) | (Judgement.case_precedent.ilike(f"%{q}%"))
         stmt = select(Judgement).where(cond).limit(limit).offset(offset)
         total_stmt = select(func.count()).select_from(select(Judgement).where(cond).subquery())
         items = db.execute(stmt).scalars().all()
         total = db.scalar(total_stmt) or 0
         return {
             "query": q, "limit": limit, "offset": offset, "total": total,
-            "items": [{"id": r.id, "title": r.title, "court": r.court, "date": r.date} for r in items],
+            "items": [{"id": r.id, "title": r.case_name, "court": r.case_court, "date": r.case_date} for r in items],
         }

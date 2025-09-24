@@ -4,7 +4,7 @@ from datetime import datetime
 import httpx
 from dotenv import load_dotenv
 
-from app.databases.database import SessionLocal
+from app.db import SessionLocal
 from app.models.model import Judgement
 
 load_dotenv()

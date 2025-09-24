@@ -19,7 +19,7 @@ class Judgement(Base):
     case_type = Column(String, index=True, nullable=False)
     case_type_code = Column(Integer, index=True, nullable=False)
     case_result_type = Column(String, index=True, nullable=False)
-    case_result_decision = Column(String, index=True, nullable=False)
+    case_result_decision = Column(String, index=True, nullable=True)
     case_result_summary = Column(Text, nullable=True)
     reference = Column(String, nullable=True)
     reference_case = Column(String, nullable=True)
