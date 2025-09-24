@@ -1,8 +1,7 @@
+
 from fastapi import APIRouter, Query
 from sqlalchemy.orm import Session
 from app.utils.crawl import fetch_law_data, save_law_data_to_db, law_data_list
-
-router = APIRouter()
 
 @router.post("/judgement")
 def get_judgement(header : str, page = int):
