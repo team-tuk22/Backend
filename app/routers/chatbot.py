@@ -3,17 +3,13 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 from typing import Optional
+from app.schemas.chat_bot import ChatRequest
 
-from chat_bot.models import make_response
+from app.services.chat_bot.models import make_response
 from app.db import SessionLocal
 from app.models.model import Judgement
 
 router = APIRouter()
-
-class ChatRequest(BaseModel):
-    user_question: str  # 유저 질문
-    db_should_query_this: str = ""  # DB 검색 키워드
-    model_type: str = ""  # 모델 타입
 
 @router.post("/chatbot/generate")
 def chat(request: ChatRequest):

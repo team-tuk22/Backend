@@ -1,24 +1,29 @@
-from fastapi import APIRouter, Query, HTTPException
-from pydantic import BaseModel
-from typing import Optional
-from app.utils.crawl import fetch_law_data, save_law_data_to_db
-
+from fastapi import APIRouter, Query
+from sqlalchemy.orm import Session
+from app.utils.crawl import fetch_law_data, save_law_data_to_db, law_data_list
 
 router = APIRouter()
 
-@router.get("/judgement")
-def get_judgement(id: int = Query(..., description="법령 ID")):
-    """
-    int 타입의 id를 받아 해당 판례 데이터를 크롤링하여 반환하고 DB에 저장합니다.
-    """
-    result = fetch_law_data(str(id))
+@router.post("/judgement")
+def get_judgement(header : str, page = int):
+    id_list = law_data_list(header, page)
 
-    if isinstance(result, dict) and "PrecService" in result:
-        saved = save_law_data_to_db(result)
-        if saved.get("saved"):
-            return {"fetched": result, "db_status": saved}
-        else:
-            raise HTTPException(status_code=500, detail=saved)
-    else:
-        raise HTTPException(status_code=400, detail="Invalid response from law.go.kr API")
+    results = []
+    count = 0
     
+    for id in id_list:
+        data = fetch_law_data(str(id))
+        save_data = save_law_data_to_db(data)
+        
+        if save_data.get("saved"):
+            count += 1
+        
+        p = data.get("PrecService") if data else None
+        results.append({
+            "판례일련번호": id, 
+            "사건명": p.get("사건명") if p else None,
+            "저장상태": "성공" if save_data.get("saved") else "실패"
+        })
+    
+    results.append(f"{len(id_list)}건 중 {count}건 저장됨")
+    return results
