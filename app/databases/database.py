@@ -1,31 +1,55 @@
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker, declarative_base
-import time
-from sqlalchemy.exc import OperationalError
+# from sqlalchemy import create_engine, text
+# from sqlalchemy.orm import sessionmaker, declarative_base
+# import os
+# from dotenv import load_dotenv
+# import time
+# from sqlalchemy.exc import OperationalError
 
-# 이제 모든 설정은 비서 역할을 하는 config.py 파일로부터 가져옵니다.
-from app.config import DATABASE_URL
+# load_dotenv()
 
-# engine을 한 번만 명확하게 생성합니다.
-engine = create_engine(DATABASE_URL)
+# DATABASE_URL = os.getenv("POSTGRES_URL")
+# MAX_RETRIES = 10
+# RETRY_DELAY = 2  # seconds
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# engine = None
 
-Base = declarative_base()
+# def get_db():
+#     db = SessionLocal()
+#     try:
+#         yield db
+#     finally:
+#         db.close()
 
+# #DB 연결 재시도 함수
+# def init_engine_with_retries():
+#     global engine
+#     for attempt in range(1, MAX_RETRIES + 1):
+#         try:
+#             engine = create_engine(str(DATABASE_URL), pool_pre_ping=True)
+#             with engine.connect() as conn:
+#                 #커넥션 테스트
+#                 conn.execute(text("SELECT 1"))
+#             print(f"✅ Connected to DB (attempt {attempt})")
+#             break
+#         except OperationalError as e:
+#             print(f"⚠️  DB connection failed (attempt {attempt}/{MAX_RETRIES}): {e}")
+#             time.sleep(RETRY_DELAY)
+#     else:
+#         raise RuntimeError("❌ Could not connect to the database after multiple attempts")
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# engine = create_engine(DATABASE_URL)
+# init_engine_with_retries()
+# SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+# Base = declarative_base()
 
+# from app.models.model import Base  # 모델들을 메타데이터에 등록
 
-# 데이터베이스 테이블 생성을 위한 함수
-def init_db():
-    try:
-        Base.metadata.create_all(bind=engine)
-        print("✅ Created DB tables (if not exist)")
-    except Exception as e:
-        print(f"❌ Failed to create tables: {e}")
+# def init_db():
+#     """
+#     Create all tables defined in SQLAlchemy models.
+#     """
+#     try:
+#         Base.metadata.create_all(bind=engine)
+#         print("✅ Created DB tables (if not exist)")
+#     except Exception as e:
+#         print(f"❌ Failed to create tables: {e}")

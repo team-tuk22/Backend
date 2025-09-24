@@ -4,11 +4,12 @@ from datetime import datetime
 import httpx
 from dotenv import load_dotenv
 
-from app.databases.database import SessionLocal
+from app.db import SessionLocal
 from app.models.model import Judgement
 
 load_dotenv()
 BASE_URL = os.getenv("CRAWL_BASE_URL")
+BASE_LIST_URL = os.getenv("CRAWL_BASE_LIST_URL")
 
 def _strip_html(br_text: str | None) -> str | None:
     if not br_text:
@@ -39,10 +40,6 @@ def fetch_law_data(law_id: str):
         }
 
 def save_law_data_to_db(data: dict):
-    """
-    law.go.kr DRF JSON(PrecService)을 Judgement 테이블에 upsert.
-    반환: {"saved": True, "case_number": "..."} or {"saved": False, "reason": "..."}
-    """
     if not isinstance(data, dict) or "PrecService" not in data:
         return {"saved": False, "reason": "PrecService not found in response"}
 
@@ -61,7 +58,7 @@ def save_law_data_to_db(data: dict):
     case_result_summary = _strip_html(p.get("판결요지"))
     reference = _strip_html(p.get("참조조문"))
     reference_case = _strip_html(p.get("참조판례"))
-    case_precedent = _strip_html(p.get("판례내용"))
+    case_precedent = _strip_html(p.get("판례요지"))
 
     if not case_number or not case_date:
         return {"saved": False, "reason": "missing 사건번호 or 선고일자"}
@@ -94,7 +91,6 @@ def save_law_data_to_db(data: dict):
             )
             db.add(obj)
         else:
-            # 기존 객체 업데이트
             for field, value in [
                 ("case_name", case_name),
                 ("case_number", case_number),
@@ -120,3 +116,23 @@ def save_law_data_to_db(data: dict):
         return {"saved": False, "reason": str(e)}
     finally:
         db.close()
+
+def law_data_list(keyword: str, page: int):
+    url = f"{BASE_LIST_URL}{keyword}{'&page='}{page}"
+    resp = httpx.get(url, timeout=15)
+    resp.raise_for_status()
+    data = resp.json()
+
+    items = []
+    if isinstance(data, dict):
+        prec_search = data.get("PrecSearch")
+        if isinstance(prec_search, dict):
+            items = prec_search.get("prec", [])
+    elif isinstance(data, list):
+        items = data
+
+    ids = []
+    for item in items:
+        if isinstance(item, dict) and "판례일련번호" in item:
+            ids.append(str(item["판례일련번호"]).strip())
+    return ids

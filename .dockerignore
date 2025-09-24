@@ -1,0 +1,15 @@
+# Git 관련 파일 및 폴더
+.git
+.gitignore
+
+# 파이썬 캐시 및 가상 환경
+__pycache__
+*.pyc
+*.pyo
+.venv
+venv
+env
+
+# IDE 관련 파일 (예: VS Code, PyCharm)
+.vscode
+.idea
