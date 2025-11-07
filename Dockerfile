@@ -12,7 +12,6 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
-COPY chat_bot ./chat_bot 
 EXPOSE 8000
 
 # ← 반드시 필요
